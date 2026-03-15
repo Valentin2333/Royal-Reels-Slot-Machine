@@ -1,6 +1,6 @@
 {
   "name": "royal-reels",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "framer-motion": "^11.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
