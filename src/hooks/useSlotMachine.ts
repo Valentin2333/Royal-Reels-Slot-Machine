@@ -18,6 +18,8 @@ interface State {
   winHistory: WinRecord[]
   reelsSpinning: [boolean, boolean, boolean]
   winRecordIdCounter: number
+  biggestWin: number
+  showMegaWin: boolean
 }
 
 type Action =
@@ -25,6 +27,7 @@ type Action =
   | { type: 'REEL_STOP'; index: 0 | 1 | 2 }
   | { type: 'SPIN_COMPLETE'; result: SpinResult }
   | { type: 'CELEBRATION_END' }
+  | { type: 'HIDE_MEGA_WIN' }
   | { type: 'SET_BET'; bet: number }
 
 const initialState: State = {
@@ -38,6 +41,8 @@ const initialState: State = {
   winHistory: [],
   reelsSpinning: [false, false, false],
   winRecordIdCounter: 0,
+  biggestWin: 0,
+  showMegaWin: false,
 }
 
 function reducer(state: State, action: Action): State {
@@ -53,6 +58,7 @@ function reducer(state: State, action: Action): State {
         reelsSpinning: [true, true, true],
         spinCount: state.spinCount + 1,
         freeSpins: Math.max(0, state.freeSpins - 1),
+        showMegaWin: false,
       }
     }
     case 'REEL_STOP': {
@@ -64,16 +70,21 @@ function reducer(state: State, action: Action): State {
       const { result } = action
       const newBalance = state.balance + result.totalWin
       const newFreeSpins = state.freeSpins + result.freeSpinsAwarded
+      const newBiggest = Math.max(state.biggestWin, result.totalWin)
+      const tier = getWinTier(result.totalWin, state.bet)
+      const showMegaWin = tier === 'mega' || tier === 'big' || tier === 'medium'
 
       let newHistory = state.winHistory
+      let newCounter = state.winRecordIdCounter
       if (result.totalWin > 0) {
         const record: WinRecord = {
-          id: state.winRecordIdCounter + 1,
+          id: newCounter + 1,
           amount: result.totalWin,
           bet: state.bet,
           symbols: result.wins.map((w) => w.symbolId),
         }
         newHistory = [record, ...state.winHistory].slice(0, 10)
+        newCounter++
       }
 
       return {
@@ -83,11 +94,15 @@ function reducer(state: State, action: Action): State {
         result,
         phase: result.totalWin > 0 ? 'won' : 'lost',
         winHistory: newHistory,
-        winRecordIdCounter: state.winRecordIdCounter + (result.totalWin > 0 ? 1 : 0),
+        winRecordIdCounter: newCounter,
+        biggestWin: newBiggest,
+        showMegaWin,
       }
     }
     case 'CELEBRATION_END':
       return { ...state, phase: 'idle' }
+    case 'HIDE_MEGA_WIN':
+      return { ...state, showMegaWin: false }
     case 'SET_BET':
       return { ...state, bet: action.bet }
     default:
@@ -112,7 +127,6 @@ export function useSlotMachine() {
     const newGrid = spinReels()
     dispatch({ type: 'SPIN_START', newGrid })
 
-    // Stop reels staggered
     REEL_STOP_DELAYS.forEach((delay, i) => {
       const t = setTimeout(() => {
         dispatch({ type: 'REEL_STOP', index: i as 0 | 1 | 2 })
@@ -120,16 +134,21 @@ export function useSlotMachine() {
       timersRef.current.push(t)
     })
 
-    // Calculate result after last reel stops
     const resultT = setTimeout(() => {
       const result = calculateResult(newGrid, state.bet)
       dispatch({ type: 'SPIN_COMPLETE', result })
 
+      const tier = getWinTier(result.totalWin, state.bet)
+      const celebDuration = tier === 'mega' ? 4000 : tier === 'big' ? 3000 : 2000
+
       if (result.totalWin > 0) {
+        const megaT = setTimeout(() => {
+          dispatch({ type: 'HIDE_MEGA_WIN' })
+        }, celebDuration - 500)
         const celebT = setTimeout(() => {
           dispatch({ type: 'CELEBRATION_END' })
-        }, 2000)
-        timersRef.current.push(celebT)
+        }, celebDuration)
+        timersRef.current.push(megaT, celebT)
       } else {
         dispatch({ type: 'CELEBRATION_END' })
       }
