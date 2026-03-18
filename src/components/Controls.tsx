@@ -1,5 +1,4 @@
 import { BET_OPTIONS } from '../constants/symbols'
-import type { BetOption } from '../constants/symbols'
 
 interface ControlsProps {
   bet: number

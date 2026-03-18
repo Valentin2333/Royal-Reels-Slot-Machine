@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { SYMBOLS, PAYLINES, BET_OPTIONS } from '../constants/symbols'
+import { SYMBOLS, PAYLINES } from '../constants/symbols'
 
 interface PayTableProps {
   isOpen: boolean
