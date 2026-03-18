@@ -28,7 +28,7 @@ beforeEach(() => {
   })
 })
 
-afterEach(() => vi.unstubAllGlobals())
+afterEach(() => { vi.unstubAllGlobals() })
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 

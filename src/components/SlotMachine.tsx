@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { PAYLINES } from '../constants/symbols'
 import { useSlotMachine } from '../hooks/useSlotMachine'
 import { audio } from '../utils/audioManager'
-import { getWinTier } from '../utils/gameLogic'
 import Balance from './Balance'
 import Controls from './Controls'
 import ReelGrid from './ReelGrid'
@@ -87,6 +86,7 @@ export default function SlotMachine() {
 
         {/* Reel area with payline dots */}
         <div className="flex gap-3 items-stretch">
+          {/* Left payline dots */}
           <div className="flex flex-col justify-around py-1 gap-2">
             {PAYLINES.map((pl) => {
               const isActive = wins.some((w) => w.paylineId === pl.id)
@@ -110,6 +110,7 @@ export default function SlotMachine() {
           {/* Reels */}
           <ReelGrid grid={grid} reelsSpinning={reelsSpinning} wins={wins} />
 
+          {/* Right payline dots */}
           <div className="flex flex-col justify-around py-1 gap-2">
             {PAYLINES.map((pl) => {
               const isActive = wins.some((w) => w.paylineId === pl.id)
