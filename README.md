@@ -1,4 +1,4 @@
-# 🎰 Royal Reels — Casino Slot Machine
+# 🎰 Royal Reels - Casino Slot Machine
 
 A fully-featured, production-grade casino slot machine game built with React 18, TypeScript, Tailwind CSS, and Framer Motion.
 
