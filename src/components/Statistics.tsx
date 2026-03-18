@@ -28,7 +28,7 @@ export default function Statistics({ spinCount, balance, startingBalance = 1000,
           { label: 'Spins', value: spinCount.toString(), color: '#D4AF37' },
           {
             label: 'Profit',
-            value: `${profit >= 0 ? '+' : ''}$${profit}`,
+            value: `${profit >= 0 ? '+' : '-'}$${Math.abs(profit)}`,
             color: profitColor,
           },
           {

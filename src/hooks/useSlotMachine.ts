@@ -5,7 +5,7 @@ import { spinReels, calculateResult, getWinTier } from '../utils/gameLogic'
 
 const STARTING_BALANCE = 1000
 const REEL_STOP_DELAYS = [900, 1500, 2100] as const
-const RESULT_DELAY = 2400
+const RESULT_DELAY = 3400
 
 interface State {
   balance: number
